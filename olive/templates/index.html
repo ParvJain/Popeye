@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load staticfiles %}
+    <script src="{% static "bower_components/webcomponentsjs/webcomponents-lite.min.js" %}"></script>
+    <!-- 2. Use an HTML Import to bring in some elements. -->
+    <link rel="import" href="{% static "bower_components/paper-button/paper-button.html" %}">
+    <link rel="import" href="{% static "bower_components/paper-input/paper-input.html" %}">
+    <link rel="import" href="{% static "bower_components/paper-date-picker/paper-date-picker.html" %}">
+  </head>
+  <body>
+     <!-- 3. Declare the element. Configure using its attributes. -->
+    <!-- <paper-input label="Enter URL"></paper-input>
+    <paper-date-picker></paper-date-picker>
+    <paper-button>Mine Data</paper-button>
+    <div id="greeting"></div> -->
+Yo!
+    <script>
+      // To ensure that elements are ready on polyfilled browsers,
+      // wait for WebComponentsReady.
+      document.addEventListener('WebComponentsReady', function() {
+        var input = document.querySelector('paper-input');
+        var button = document.querySelector('paper-button');
+        var date = document.querySelector('paper-date-picker');
+        var greeting = document.getElementById("greeting");
+        button.addEventListener('click', function() {
+          greeting.textContent = 'Hello, ' + date.value;
+        });
+      });
+    </script>
+
+  </body>
+</html>
