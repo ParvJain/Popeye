@@ -5,11 +5,8 @@ def filter_place_id(url):
 
 def build_api_url(place_id, start_date, currency="USD", adult=1, night=1, room=1):
     url = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency={currency}&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&newrequest=true&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, currency=currency, start_date=start_date, adult=adult, night=night, room=room)
-    return url
-
-def build_api_url2(place_id, start_date, currency="USD", adult=1, night=1, room=1):
-    url = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency={currency}&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&newrequest=false&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, currency=currency, start_date=start_date, adult=adult, night=night, room=room)
-    return url
+    url2 = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency={currency}&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&newrequest=false&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, currency=currency, start_date=start_date, adult=adult, night=night, room=room)
+    return {"url": url, "url2": url2}
 
 def get_hotel_data(url, url2):
     import requests
