@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .helper import filter_place_id, build_api_url, get_hotel_data
+from .helper import filter_place_id, build_api_url, get_hotel_data, build_api_url2
 from django.http import HttpResponse
 
 # Create your views here.
@@ -11,5 +11,6 @@ def get_details(request):
     date = request.GET["date"]
     place_id = filter_place_id(url)
     api_url = build_api_url(place_id, date)
-    hotel_data = get_hotel_data(api_url)
+    api_url2 = build_api_url2(place_id, date)
+    hotel_data = get_hotel_data(api_url, api_url2)
     return HttpResponse(hotel_data)

@@ -7,7 +7,11 @@ def build_api_url(place_id, start_date, currency="USD", adult=1, night=1, room=1
     url = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency={currency}&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&newrequest=true&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, currency=currency, start_date=start_date, adult=adult, night=night, room=room)
     return url
 
-def get_hotel_data(url):
+def build_api_url2(place_id, start_date, currency="USD", adult=1, night=1, room=1):
+    url = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency={currency}&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&newrequest=false&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, currency=currency, start_date=start_date, adult=adult, night=night, room=room)
+    return url
+
+def get_hotel_data(url, url2):
     import requests
     head = {"X-TripAdvisor-Unique"  : "%1%enc%3AE%2FBSJQVWpXQgpcx1Kny84oG1E5WQcMEx%2FVy1QhY9y9zT5BsMYvhPlw%3D%3D",
             "X-TripAdvisor-UUID"    : "b25c4d71-f986-470f-bca4-92defd5729a5",
@@ -16,10 +20,8 @@ def get_hotel_data(url):
             "Authorization"         : "token :2:zR-Xr1-R4Trh_I8zW9nrGQ:U6F_rdBkjQyzn6hB1NSFCbuNvB5le3zlXd4KSX9fHvh1al7xpPMGImddWYi0tX6QhivpQKG_hdjnwPrY8bIbH4JDaZ1jG4JFPlWUWzdzP8pOCszoq2JXMVsRbrl1-7UC3dXGwElk0W5QBiiTL4Swyw",
             "X-TripAdvisor-API-Key" : "ce957ab2-0385-40f2-a32d-ed80296ff67f"}
     r = requests.get(url, headers=head)
-    return r.content
-
-
-
+    n = requests.get(url2, headers=head)
+    return n.content
 
 # build_api_url("1635880", "2016-02-17", "INR")
 # get_hotel_date("https://api.tripadvisor.com/api/internal/1.10/meta_hac/1635880?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency=INR&ip=infer&commerceonly=false&checkin=2016-02-17&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults=1&nights=1&devicetype=mobile&newrequest=true&subcategory_hotels=hotel&mcid=0&mobile=true&rooms=1")
