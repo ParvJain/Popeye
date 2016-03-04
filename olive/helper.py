@@ -14,7 +14,7 @@ class HotelScraper(object):
             api_url = self.build_api_url(place_id, self.start_date, self.adult, self.night, self.room)
             generated_data = self.get_tripadvisor_data(api_url)
         elif host == "hostelworld":
-            generated_data = self.get_hostelworld_data(self.url)
+            generated_data = self.get_hostelworld_data(self.url, self.adult, self.night)
         else:
             generated_data = "{'unkownHost':'"+ host +"'}"
         return generated_data
@@ -51,7 +51,7 @@ class HotelScraper(object):
         n = requests.get(url + "&newrequest=false", headers=head)
         return n.content
 
-    def get_hostelworld_data(self, url):
+    def get_hostelworld_data(self, url, adult, night):
         import json
         import requests
         from lxml import html
@@ -69,7 +69,7 @@ class HotelScraper(object):
         generated_data['hostel_name'] = title
         generated_data['images'] = images
         generated_data['rating'] = rating
-        generated_data['lowest_price'] = l_price
+        generated_data['lowest_price'] = int(l_price) * int(adult) * int(night)
         generated_data['reviews'] = [x.strip() for x in reviews]
 
         return json.dumps(generated_data)
