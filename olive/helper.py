@@ -12,19 +12,20 @@ class HotelScraper(object):
         if host == "tripadvisor":
             place_id = self.filter_place_id(self.url)
             api_url = self.build_api_url(place_id, self.start_date, self.adult, self.night, self.room)
-            generated_data = self.get_hotel_data(api_url)
-            return generated_data
+            generated_data = self.get_tripadvisor_data(api_url)
         elif host == "hostelworld":
-            return 0
+            generated_data = self.get_hostelworld_data(self.url)
         else:
-            return host
+            generated_data = "{'unkownHost':'"+ host +"'}"
+        return generated_data
 
     def check_hotel_host(self, url):
         from urlparse import urlparse
         host = urlparse(url).hostname
-        if host.lower() == "tripadvisor.in" or host.lower() == "www.tripadvisor.in":
+        host = host.lower()
+        if "tripadvisor" in host:
             return "tripadvisor"
-        elif host.lower() == "hostelworld.com" or host.lower() == "www.hostelworld.com":
+        elif "hostelworld" in host:
             return "hostelworld"
         else:
             return host
@@ -38,7 +39,7 @@ class HotelScraper(object):
         url = "https://api.tripadvisor.com/api/internal/1.10/meta_hac/{place_id}?limit=50&lod=detail&bookable=true&dieroll=1&lang=en_US&currency=USD&ip=infer&commerceonly=false&checkin={start_date}&bcom_offers=true&roomtype=lowest_price&subcategory=hotel&adults={adult}&nights={night}&devicetype=mobile&subcategory_hotels=hotel&mcid=0&mobile=true&rooms={room}".format(place_id=place_id, start_date=start_date, adult=adult, night=night, room=room)
         return url
 
-    def get_hotel_data(self, url):
+    def get_tripadvisor_data(self, url):
         import requests
         head = {"X-TripAdvisor-Unique"  : "%1%enc%3AE%2FBSJQVWpXQgpcx1Kny84oG1E5WQcMEx%2FVy1QhY9y9zT5BsMYvhPlw%3D%3D",
                 "X-TripAdvisor-UUID"    : "b25c4d71-f986-470f-bca4-92defd5729a5",
@@ -49,3 +50,39 @@ class HotelScraper(object):
         r = requests.get(url + "&newrequest=true" , headers=head)
         n = requests.get(url + "&newrequest=false", headers=head)
         return n.content
+
+    def get_hostelworld_data(self, url):
+        import json
+        import requests
+        from lxml import html
+        generated_data = {}
+        n = requests.get(url)
+        tree = html.fromstring(n.content)
+        title = tree.xpath('//div[@class="main"]/h1/text()')[0].strip()
+        images = tree.xpath('//div[@class="main"]//@data-largeimageurl')
+        rating = tree.xpath('//span[@itemprop="ratingValue"]/text()')[0].strip()
+        review_url = tree.xpath('//li[@id="microsite-tab-reviews"]/a/@href')[0]
+        prices = tree.xpath('//td[starts-with(@class," token")]/span[@class="currency"]/text()')
+        h_prices = self.humanize_prices(prices)
+        l_price = min(h_prices)
+        reviews = self.get_hosteworld_reviews(review_url)
+        generated_data['hostel_name'] = title
+        generated_data['images'] = images
+        generated_data['rating'] = rating
+        generated_data['lowest_price'] = l_price
+        generated_data['reviews'] = [x.strip() for x in reviews]
+
+        return json.dumps(generated_data)
+
+    def humanize_prices(self, prices):
+        import re
+        h_prices = [float(re.findall(r"[-+]?\d*\.\d+|\d+", x)[0]) for x in prices]
+        return h_prices
+
+    def get_hosteworld_reviews(self, url):
+        import requests
+        from lxml import html
+        n = requests.get(url)
+        tree = html.fromstring(n.content)
+        reviews = tree.xpath('//div[@class="reviewbox"]/p/text()')
+        return reviews
